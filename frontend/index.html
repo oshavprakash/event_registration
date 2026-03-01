@@ -1,19 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Event Registration</title>
+    <meta charset="UTF-8">
+    <title>EventHub - Smart Event Registration</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Event Registration</h1>
-    </header>
+<header class="hero">
+    <h1>🎟 EventHub</h1>
+    <p>Register Smart. Manage Seats. No Chaos.</p>
+    <button onclick="scrollToEvents()">Explore Events</button>
+</header>
 
-    <div class="container">
-        <div id="events" class="events"></div>
-    </div>
+<section class="auth">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter Username">
+    <button onclick="login()">Login</button>
+    <p id="welcomeMessage"></p>
+</section>
 
-    <script src="script.js"></script>
+<section class="admin-panel" id="adminPanel" style="display:none;">
+    <h2>Admin Panel - Create Event</h2>
+    <input type="text" id="eventName" placeholder="Event Name">
+    <input type="date" id="eventDate">
+    <input type="number" id="eventSeats" placeholder="Total Seats">
+    <button onclick="createEvent()">Create Event</button>
+</section>
+
+<section class="events" id="eventsSection">
+    <h2>Available Events</h2>
+    <div id="eventList" class="event-container"></div>
+</section>
+
+<footer>
+    <p>© 2026 EventHub | Hackathon Project</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>

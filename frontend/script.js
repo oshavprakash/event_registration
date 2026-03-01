@@ -1,66 +1,96 @@
-const API_URL = "http://127.0.0.1:8003";
+let currentUser = "";
+let isAdmin = false;
 
-async function loadEvents() {
-    try {
-        const res = await fetch(`${API_URL}/events`);
-        const events = await res.json();
+let events = [
+    { name: "Tech Conference 2026", date: "2026-03-25", seats: 5 },
+    { name: "AI Workshop", date: "2026-04-10", seats: 2 }
+];
 
-        const container = document.getElementById("events");
-        container.innerHTML = "";
+function login() {
+    const username = document.getElementById("username").value;
+    if (username === "") {
+        alert("Please enter a username.");
+        return;
+    }
 
-        events.forEach(event => {
-            const seatsLeft = event.capacity - event.registered_count;
+    currentUser = username;
 
-            const div = document.createElement("div");
-            div.className = "event-card";
-
-            div.innerHTML = `
-                <h3>${event.title}</h3>
-                <p>${event.description}</p>
-                <p class="seats">Seats Left: ${seatsLeft}</p>
-                <button 
-                    ${seatsLeft <= 0 ? "disabled" : ""} 
-                    onclick="register('${event.id}')">
-                    ${seatsLeft <= 0 ? "Event Full" : "Register"}
-                </button>
-            `;
-
-            container.appendChild(div);
-        });
-
-    } catch (error) {
-        console.error("Error loading events:", error);
-        alert("Could not load events. Make sure backend is running.");
+    if (username.toLowerCase() === "admin") {
+        isAdmin = true;
+        document.getElementById("adminPanel").style.display = "block";
+        document.getElementById("welcomeMessage").innerText =
+            "Welcome Admin!";
+    } else {
+        isAdmin = false;
+        document.getElementById("adminPanel").style.display = "none";
+        document.getElementById("welcomeMessage").innerText =
+            "Welcome, " + currentUser + "!";
     }
 }
 
-async function register(eventId) {
-    const userId = prompt("Enter your User ID:");
+function createEvent() {
+    if (!isAdmin) return;
 
-    if (!userId) return;
+    const name = document.getElementById("eventName").value;
+    const date = document.getElementById("eventDate").value;
+    const seats = parseInt(document.getElementById("eventSeats").value);
 
-    try {
-        const res = await fetch(`${API_URL}/register`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                user_id: userId,
-                event_id: eventId
-            })
-        });
+    if (name === "" || date === "" || isNaN(seats)) {
+        alert("Please fill all fields correctly.");
+        return;
+    }
 
-        if (res.ok) {
-            alert("Registered Successfully!");
-            loadEvents();
+    events.push({ name: name, date: date, seats: seats });
+
+    document.getElementById("eventName").value = "";
+    document.getElementById("eventDate").value = "";
+    document.getElementById("eventSeats").value = "";
+
+    renderEvents();
+}
+
+function scrollToEvents() {
+    document.getElementById("eventsSection").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function renderEvents() {
+    const eventList = document.getElementById("eventList");
+    eventList.innerHTML = "";
+
+    events.forEach((event, index) => {
+        const card = document.createElement("div");
+        card.className = "event-card";
+
+        let content = `
+            <h3>${event.name}</h3>
+            <p>📅 ${event.date}</p>
+            <p>🎟 Seats Available: ${event.seats}</p>
+        `;
+
+        if (event.seats > 0) {
+            content += `<button onclick="register(${index})">Register</button>`;
         } else {
-            const errorText = await res.text();
-            alert(errorText || "Event is full!");
+            content += `<p class="full">❌ Fully Booked</p>`;
         }
 
-    } catch (error) {
-        console.error("Registration error:", error);
-        alert("Error registering. Check backend.");
+        card.innerHTML = content;
+        eventList.appendChild(card);
+    });
+}
+
+function register(index) {
+    if (currentUser === "") {
+        alert("Please login first!");
+        return;
+    }
+
+    if (events[index].seats > 0) {
+        events[index].seats--;
+        alert("Registration successful!");
+        renderEvents();
     }
 }
 
-loadEvents();
+renderEvents();

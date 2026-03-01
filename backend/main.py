@@ -1,74 +1,113 @@
-from fastapi import FastAPI,HTTPException
-from supabase import create_client,Client
+# -------------------------------
+# SeatFlow - Event Registration API
+# -------------------------------
+
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Allow frontend (HTML/JS) to connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-class EventCreate(BaseModel):
-    title: str
-    description: str
-    event_date: str
-    capacity: int
+# -------------------------------
+# Temporary In-Memory Database
+# -------------------------------
+
+users = []
+
+events = [
+    {
+        "id": 1,
+        "title": "AI & Machine Learning Workshop",
+        "date": "2026-03-10",
+        "total_seats": 5,
+        "registered": 0
+    },
+    {
+        "id": 2,
+        "title": "Full Stack Web Bootcamp",
+        "date": "2026-03-15",
+        "total_seats": 3,
+        "registered": 0
+    }
+]
+
+# -------------------------------
+# Data Models
+# -------------------------------
+
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class Login(BaseModel):
+    email: str
+    password: str
+
+class EventRegistration(BaseModel):
+    event_id: int
 
 
-class RegisterRequest(BaseModel):
-    user_id: str
-    event_id: str
+# -------------------------------
+# SIGNUP Endpoint
+# -------------------------------
+
+@app.post("/signup")
+def signup(user: User):
+    for u in users:
+        if u["email"] == user.email:
+            raise HTTPException(status_code=400, detail="User already exists")
+
+    users.append(user.dict())
+    return {"message": "Signup successful"}
 
 
-@app.post("/events")
-def create_event(event: EventCreate):
-    response = supabase.table("events").insert({
-        "title": event.title,
-        "description": event.description,
-        "event_date": event.event_date,
-        "capacity": event.capacity
-    }).execute()
+# -------------------------------
+# LOGIN Endpoint
+# -------------------------------
 
-    return response.data
+@app.post("/login")
+def login(data: Login):
+    for u in users:
+        if u["email"] == data.email and u["password"] == data.password:
+            return {"message": "Login successful"}
 
+    raise HTTPException(status_code=400, detail="Invalid credentials")
+
+
+# -------------------------------
+# GET ALL EVENTS
+# -------------------------------
 
 @app.get("/events")
 def get_events():
-    response = supabase.table("events").select("*").execute()
-    return response.data
+    return events
 
 
-@app.post("/register")
-def register_user(data: RegisterRequest):
-    response = supabase.rpc("register_user", {
-        "p_user": data.user_id,
-        "p_event": data.event_id
-    }).execute()
+# -------------------------------
+# REGISTER FOR EVENT
+# -------------------------------
 
-    result = response.data
+@app.post("/register/{event_id}")
+def register_event(event_id: int):
 
-    if result == "FULL":
-        raise HTTPException(status_code=400, detail="Event is full")
+    for event in events:
+        if event["id"] == event_id:
 
-    return {"status": result}
+            # Check if event is full
+            if event["registered"] >= event["total_seats"]:
+                raise HTTPException(status_code=400, detail="Event Fully Booked")
 
+            event["registered"] += 1
+            return {"message": "Registration successful"}
 
-@app.post("/cancel")
-def cancel_registration(data: RegisterRequest):
-    supabase.table("registrations") \
-        .update({"status": "CANCELLED"}) \
-        .eq("user_id", data.user_id) \
-        .eq("event_id", data.event_id) \
-        .execute()
-
-    supabase.rpc("decrement_registration", {
-        "p_event": data.event_id
-    }).execute()
-
-    return {"status": "Cancelled"}
+    raise HTTPException(status_code=404, detail="Event not found")
