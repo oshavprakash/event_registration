@@ -1,7 +1,7 @@
 // Users stored in localStorage
 let events = [
-    { name: "Tech Conference 2026", date: "2026-03-25", seats: 5 },
-    { name: "AI Workshop", date: "2026-04-10", seats: 2 }
+    { name: "Tech Conference 2026", date: "2026-03-25", time:"10:30 AM", duration:"2 Hours",venue:"Internal Auditorium", seats: 5 },
+    { name: "AI Workshop", date: "2026-04-10",time:"2:30 PM", duration:"2 Hours",venue:"Media Hall" seats: 2 }
 ];
 
 
