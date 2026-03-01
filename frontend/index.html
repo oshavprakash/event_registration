@@ -2,41 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EventHub - Smart Event Registration</title>
-    <link rel="stylesheet" href="style.css">
+    <title>EventHub - Login</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
-<body>
+<body class="center-page">
 
-<header class="hero">
-    <h1>🎟 EventHub</h1>
-    <p>Register Smart. Manage Seats. No Chaos.</p>
-    <button onclick="scrollToEvents()">Explore Events</button>
-</header>
+<div class="card">
+    <img src="https://via.placeholder.com/60" alt="EventHub Logo" class="logo">
+    <h1>Login</h1>
 
-<section class="auth">
-    <h2>Login</h2>
     <input type="text" id="username" placeholder="Enter Username">
-    <button onclick="login()">Login</button>
-    <p id="welcomeMessage"></p>
-</section>
+    <button type="button" onclick="login()">Login</button>
 
-<section class="admin-panel" id="adminPanel" style="display:none;">
-    <h2>Admin Panel - Create Event</h2>
-    <input type="text" id="eventName" placeholder="Event Name">
-    <input type="date" id="eventDate">
-    <input type="number" id="eventSeats" placeholder="Total Seats">
-    <button onclick="createEvent()">Create Event</button>
-</section>
+    <p>New here? <a href="signup.html">Sign Up</a></p>
+    <p id="loginMessage"></p>
+</div>
 
-<section class="events" id="eventsSection">
-    <h2>Available Events</h2>
-    <div id="eventList" class="event-container"></div>
-</section>
-
-<footer>
-    <p>© 2026 EventHub | Hackathon Project</p>
-</footer>
-
-<script src="script.js"></script>
+<script src="./script.js"></script>
 </body>
 </html>

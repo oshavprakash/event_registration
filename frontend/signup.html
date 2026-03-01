@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EventHub - Sign Up</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body class="center-page">
+
+<div class="card">
+    <img src="https://via.placeholder.com/60" alt="EventHub Logo" class="logo">
+    <h1>Sign Up</h1>
+
+    <input type="text" id="signupUsername" placeholder="Enter Username">
+    <select id="signupRole">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+    </select>
+    <button type="button" onclick="signup()">Sign Up</button>
+
+    <p>Already have an account? <a href="index.html">Login</a></p>
+    <p id="signupMessage"></p>
+</div>
+
+<script src="./script.js"></script>
+</body>
+</html>

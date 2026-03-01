@@ -1,46 +1,108 @@
-let currentUser = "";
-let isAdmin = false;
-
+// Users stored in localStorage
 let events = [
     { name: "Tech Conference 2026", date: "2026-03-25", seats: 5 },
     { name: "AI Workshop", date: "2026-04-10", seats: 2 }
 ];
 
-function login() {
-    const username = document.getElementById("username").value;
-    if (username === "") {
-        alert("Please enter a username.");
+
+// ------------------ SIGNUP ------------------
+function signup() {
+    const username = document.getElementById("signupUsername").value;
+    const role = document.getElementById("signupRole").value;
+
+    if (!username) {
+        document.getElementById("signupMessage").innerText = "Enter username";
         return;
     }
 
-    currentUser = username;
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    if (username.toLowerCase() === "admin") {
-        isAdmin = true;
-        document.getElementById("adminPanel").style.display = "block";
-        document.getElementById("welcomeMessage").innerText =
-            "Welcome Admin!";
+    if (users.find(u => u.username === username)) {
+        document.getElementById("signupMessage").innerText = "Username exists!";
+        return;
+    }
+
+    users.push({ username: username, role: role });
+    localStorage.setItem("users", JSON.stringify(users));
+
+    document.getElementById("signupMessage").innerText = "Signup successful! Login now.";
+    setTimeout(() => { window.location.href = "index.html"; }, 1000);
+}
+
+
+// ------------------ LOGIN ------------------
+function login() {
+    const username = document.getElementById("username").value;
+
+    if (!username) {
+        document.getElementById("loginMessage").innerText = "Enter username";
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+    let user = users.find(u => u.username === username);
+
+    if (!user) {
+        document.getElementById("loginMessage").innerText = "User not found!";
+        return;
+    }
+
+    localStorage.setItem("currentUser", user.username);
+    localStorage.setItem("isAdmin", user.role === "admin" ? "true" : "false");
+
+    window.location.href = "dashboard.html";
+}
+
+
+// ------------------ DASHBOARD ------------------
+let currentUser = "";
+let isAdmin = false;
+
+if (document.getElementById("eventList")) {
+
+    const user = localStorage.getItem("currentUser");
+    const adminStatus = localStorage.getItem("isAdmin");
+
+    if (!user) {
+        window.location.href = "index.html";
     } else {
-        isAdmin = false;
-        document.getElementById("adminPanel").style.display = "none";
-        document.getElementById("welcomeMessage").innerText =
-            "Welcome, " + currentUser + "!";
+
+        currentUser = user;
+        isAdmin = adminStatus === "true";
+
+        const welcome = document.getElementById("welcomeMessage");
+        const adminPanel = document.getElementById("adminPanel");
+
+        if (welcome) {
+            welcome.innerText = isAdmin
+                ? "Welcome Admin!"
+                : "Welcome, " + currentUser + "!";
+        }
+
+        if (adminPanel) {
+            adminPanel.style.display = isAdmin ? "block" : "none";
+        }
+
+        renderEvents();
     }
 }
 
+
+// ------------------ CREATE EVENT ------------------
 function createEvent() {
+
     if (!isAdmin) return;
 
     const name = document.getElementById("eventName").value;
     const date = document.getElementById("eventDate").value;
     const seats = parseInt(document.getElementById("eventSeats").value);
 
-    if (name === "" || date === "" || isNaN(seats)) {
-        alert("Please fill all fields correctly.");
+    if (!name || !date || isNaN(seats)) {
+        alert("Fill all fields correctly.");
         return;
     }
 
-    events.push({ name: name, date: date, seats: seats });
+    events.push({ name, date, seats });
 
     document.getElementById("eventName").value = "";
     document.getElementById("eventDate").value = "";
@@ -49,17 +111,17 @@ function createEvent() {
     renderEvents();
 }
 
-function scrollToEvents() {
-    document.getElementById("eventsSection").scrollIntoView({
-        behavior: "smooth"
-    });
-}
 
+// ------------------ RENDER EVENTS ------------------
 function renderEvents() {
+
     const eventList = document.getElementById("eventList");
+    if (!eventList) return;
+
     eventList.innerHTML = "";
 
     events.forEach((event, index) => {
+
         const card = document.createElement("div");
         card.className = "event-card";
 
@@ -70,7 +132,7 @@ function renderEvents() {
         `;
 
         if (event.seats > 0) {
-            content += `<button onclick="register(${index})">Register</button>`;
+            content += `<button onclick="register(${index})">Register ✅</button>`;
         } else {
             content += `<p class="full">❌ Fully Booked</p>`;
         }
@@ -80,8 +142,11 @@ function renderEvents() {
     });
 }
 
+
+// ------------------ REGISTER ------------------
 function register(index) {
-    if (currentUser === "") {
+
+    if (!currentUser) {
         alert("Please login first!");
         return;
     }
@@ -93,4 +158,10 @@ function register(index) {
     }
 }
 
-renderEvents();
+
+// ------------------ LOGOUT ------------------
+function logout() {
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("isAdmin");
+    window.location.href = "index.html";
+}

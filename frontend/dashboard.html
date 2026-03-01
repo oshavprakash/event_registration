@@ -1,19 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>SeatFlow Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>EventHub - Dashboard</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="logo">🎟 SeatFlow</div>
-</nav>
+<div class="top-bar">
+    <img src="https://via.placeholder.com/50" alt="EventHub Logo" class="logo-small">
+    <h2 id="welcomeMessage"></h2>
+    <button onclick="logout()" class="logout-btn">Logout</button>
+</div>
 
-<h1 class="dashboard-title">Available Events</h1>
+<!-- Admin Panel -->
+<div id="adminPanel" class="card" style="display:none;">
+    <h3>📌 Create Event (Admin Only)</h3>
+    <input type="text" id="eventName" placeholder="Event Name"><br><br>
+    <input type="date" id="eventDate"><br><br>
+    <input type="number" id="eventSeats" placeholder="Seats"><br><br>
+    <button onclick="createEvent()">Create Event</button>
+</div>
 
-<div id="eventsContainer" class="events-grid"></div>
+<hr>
 
-<script src="script.js"></script>
+<!-- Events Section -->
+<div id="eventsSection" class="card">
+    <h3>🎟 Available Events</h3>
+    <div id="eventList"></div>
+</div>
+
+<script src="./script.js"></script>
 </body>
 </html>
