@@ -1,0 +1,67 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+header {
+    background: #4a6cf7;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    padding: 30px;
+}
+
+.events {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.event-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+.event-card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.event-card p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.seats {
+    font-weight: bold;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background: #4a6cf7;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #3b57c9;
+}
+
+button:disabled {
+    background: gray;
+    cursor: not-allowed;
+}

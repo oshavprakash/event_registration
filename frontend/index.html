@@ -2,55 +2,18 @@
 <html>
 <head>
     <title>Event Registration</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Events</h1>
-    <div id="events"></div>
 
-    <script>
-        const API_URL = "http://127.0.0.1:8000";
+    <header>
+        <h1>Event Registration</h1>
+    </header>
 
-        async function loadEvents() {
-            const res = await fetch(`${API_URL}/events`);
-            const events = await res.json();
+    <div class="container">
+        <div id="events" class="events"></div>
+    </div>
 
-            const container = document.getElementById("events");
-            container.innerHTML = "";
-
-            events.forEach(event => {
-                const div = document.createElement("div");
-                div.innerHTML = `
-                    <h3>${event.title}</h3>
-                    <p>${event.description}</p>
-                    <p>Seats Left: ${event.capacity - event.registered_count}</p>
-                    <button onclick="register('${event.id}')">Register</button>
-                    <hr/>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        async function register(eventId) {
-            const userId = prompt("Enter your User ID:");
-
-            const res = await fetch(`${API_URL}/register`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    user_id: userId,
-                    event_id: eventId
-                })
-            });
-
-            if (res.ok) {
-                alert("Registered Successfully!");
-                loadEvents();
-            } else {
-                alert("Event is full!");
-            }
-        }
-
-        loadEvents();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
