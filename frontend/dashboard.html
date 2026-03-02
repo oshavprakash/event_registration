@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>EventHub - Dashboard</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div class="top-bar">
     <img src="https://via.placeholder.com/50" alt="EventHub Logo" class="logo-small">
     <h2 id="welcomeMessage"></h2>
-    <button onclick="logout()" class="logout-btn">Logout</button>
+    <button onclick="logout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
 </div>
 
 <!-- Admin Panel -->
@@ -18,9 +19,8 @@
     <h3>📌 Create Event (Admin Only)</h3>
     <input type="text" id="eventName" placeholder="Event Name"><br><br>
     <input type="date" id="eventDate"><br><br>
-    <input type="time" id="eventTime"><br><br>
     <input type="number" id="eventSeats" placeholder="Seats"><br><br>
-    <button onclick="createEvent()">Create Event</button>
+    <button onclick="createEvent()"><i class="fa-solid fa-plus"></i> Create Event</button>
 </div>
 
 <hr>
@@ -29,6 +29,20 @@
 <div id="eventsSection" class="card">
     <h3>🎟 Available Events</h3>
     <div id="eventList"></div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePayment()">&times;</span>
+        <h3>💳 Complete Payment</h3>
+        <p>₹100 per registration</p>
+        <div class="payment-options">
+            <button onclick="completePayment('Card')"><i class="fa-solid fa-credit-card"></i> Card</button>
+            <button onclick="completePayment('UPI')"><i class="fa-brands fa-paypal"></i> UPI</button>
+            <button onclick="completePayment('Wallet')"><i class="fa-solid fa-wallet"></i> Wallet</button>
+        </div>
+    </div>
 </div>
 
 <script src="./script.js"></script>

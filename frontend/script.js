@@ -1,11 +1,14 @@
-// Users stored in localStorage
+// ------------------ DATA ------------------
 let events = [
-    { name: "Full Stack development workshop", date: "2026-03-25", seats: 25 },
-    { name: "AI/ML Workshop", date: "2026-03-26", seats: 25 }
-    { name: "autocad Workshop", date: "2026-03-27", seats: 25 }
-{ name: " Revit Workshop", date: "2026-03-28", seats: 25 }
+    { name: "Full Stack development workshop", date: "2026-03-25",venue:"internal auditorium",time:"9:30 AM", seats: 25 },
+    { name: "AI/ML Workshop", date: "2026-03-26",venue:"auditorium",time:"11:30 AM", seats: 25 },
+    { name: "autocad Workshop", date: "2026-03-27",venue:"internal auditorium",time:"2:30 PM", seats: 25 },
+{ name: " Revit Workshop", date: "2026-03-28",venue:"internal auditorium",time:"4:30 PM", seats: 25 }
 ];
 
+let currentUser = "";
+let isAdmin = false;
+let payingEventIndex = null; // For payment modal
 
 // ------------------ SIGNUP ------------------
 function signup() {
@@ -31,7 +34,6 @@ function signup() {
     setTimeout(() => { window.location.href = "index.html"; }, 1000);
 }
 
-
 // ------------------ LOGIN ------------------
 function login() {
     const username = document.getElementById("username").value;
@@ -55,11 +57,7 @@ function login() {
     window.location.href = "dashboard.html";
 }
 
-
-// ------------------ DASHBOARD ------------------
-let currentUser = "";
-let isAdmin = false;
-
+// ------------------ DASHBOARD INIT ------------------
 if (document.getElementById("eventList")) {
 
     const user = localStorage.getItem("currentUser");
@@ -89,10 +87,8 @@ if (document.getElementById("eventList")) {
     }
 }
 
-
-// ------------------ CREATE EVENT ------------------
+// ------------------ CREATE EVENT (ADMIN ONLY) ------------------
 function createEvent() {
-
     if (!isAdmin) return;
 
     const name = document.getElementById("eventName").value;
@@ -100,11 +96,14 @@ function createEvent() {
     const seats = parseInt(document.getElementById("eventSeats").value);
 
     if (!name || !date || isNaN(seats)) {
-        alert("Fill all fields correctly.");
+        alert("Please fill all fields correctly.");
         return;
     }
 
-    events.push({ name, date, seats });
+    const time = "09:30 AM";
+    const venue = "Auditorium";
+
+    events.push({ name, date, time, venue, seats });
 
     document.getElementById("eventName").value = "";
     document.getElementById("eventDate").value = "";
@@ -113,30 +112,29 @@ function createEvent() {
     renderEvents();
 }
 
-
 // ------------------ RENDER EVENTS ------------------
 function renderEvents() {
-
     const eventList = document.getElementById("eventList");
     if (!eventList) return;
 
     eventList.innerHTML = "";
 
     events.forEach((event, index) => {
-
         const card = document.createElement("div");
         card.className = "event-card";
 
         let content = `
-            <h3>${event.name}</h3>
-            <p>📅 ${event.date}</p>
-            <p>🎟 Seats Available: ${event.seats}</p>
+            <h3><i class="fa-solid fa-calendar-days"></i> ${event.name}</h3>
+            <p><i class="fa-regular fa-calendar"></i> Date: ${event.date}</p>
+            <p><i class="fa-regular fa-clock"></i> Time: ${event.time}</p>
+            <p><i class="fa-solid fa-building-columns"></i> Venue: ${event.venue}</p>
+            <p><i class="fa-solid fa-chair"></i> Seats Available: ${event.seats}</p>
         `;
 
         if (event.seats > 0) {
-            content += `<button onclick="register(${index})">Register ✅</button>`;
+            content += `<button onclick="register(${index})"><i class="fa-solid fa-ticket"></i> Register</button>`;
         } else {
-            content += `<p class="full">❌ Fully Booked</p>`;
+            content += `<p class="full"><i class="fa-solid fa-xmark"></i> Fully Booked</p>`;
         }
 
         card.innerHTML = content;
@@ -144,22 +142,36 @@ function renderEvents() {
     });
 }
 
-
-// ------------------ REGISTER ------------------
+// ------------------ REGISTER (OPEN PAYMENT MODAL) ------------------
 function register(index) {
-
     if (!currentUser) {
         alert("Please login first!");
         return;
     }
 
-    if (events[index].seats > 0) {
-        events[index].seats--;
-        alert("Registration successful!");
-        renderEvents();
+    if (events[index].seats <= 0) {
+        alert("Event is fully booked!");
+        return;
     }
+
+    payingEventIndex = index;
+    document.getElementById("paymentModal").style.display = "block";
 }
 
+// ------------------ PAYMENT FUNCTIONS ------------------
+function closePayment() {
+    document.getElementById("paymentModal").style.display = "none";
+    payingEventIndex = null;
+}
+
+function completePayment(method) {
+    if (payingEventIndex === null) return;
+
+    events[payingEventIndex].seats--;
+    alert(`Payment via ${method} successful! Registration confirmed.`);
+    closePayment();
+    renderEvents();
+}
 
 // ------------------ LOGOUT ------------------
 function logout() {
